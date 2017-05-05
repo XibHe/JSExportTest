@@ -22,20 +22,21 @@
     _myWebView.delegate = self;
     [self.view addSubview:_myWebView];
     //测试网址（本地HTML文件）
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSString *resPath = [bundle resourcePath];
-    NSString *filePath = [resPath stringByAppendingPathComponent:@"test.html"];
-    [_myWebView loadHTMLString:[NSString stringWithContentsOfFile:filePath] baseURL:[NSURL fileURLWithPath:[bundle bundlePath]]];
+    NSString *path = [[NSBundle mainBundle] bundlePath];
+    NSURL *baseURL = [NSURL fileURLWithPath:path];
+    NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"html"];
+    NSString * htmlCont = [NSString stringWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
+    [_myWebView loadHTMLString:htmlCont baseURL:baseURL];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
     
-}
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    
     JSContext *context = [webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
     _javaScriptObj = [[JavaScriptObject alloc] init];
     context[@"iOS"] = _javaScriptObj;
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     
     return YES;
 }
